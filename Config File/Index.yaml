@@ -9,7 +9,7 @@
     - VirtualParameters.getdeviceuptime
     - VirtualParameters.getponmode
     - VirtualParameters.RXPower
-    - InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username
+    - VirtualParameters.pppoeUsername
     - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID
     - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase
     - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.TotalAssociations
@@ -24,7 +24,7 @@
   parameter: DeviceID.SerialNumber
 
 - label: "'PPPoE Username'"
-  parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username
+  parameter: VirtualParameters.pppoeUsername
   writable: false
 
 - label: "'Uptime'"
