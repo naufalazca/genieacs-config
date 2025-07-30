@@ -1,0 +1,1063 @@
+# =============================================================================
+# DEVICE PAGE CONFIGURATION
+# =============================================================================
+# This file defines the layout and parameters displayed on device pages
+# in GenieACS interface, organized by manufacturer and device type
+# =============================================================================
+
+# =============================================================================
+# BASIC TOOLS & ACTIONS
+# =============================================================================
+- type: "'ping'"
+
+# =============================================================================
+# GENERAL DEVICE INFORMATION
+# =============================================================================
+- type: "'parameter-list'"
+  parameters:
+    # Last Inform Status with Online Indicator
+    - element: "'span.inform'"
+      label: "'Last Inform'"
+      parameter: DATE_STRING(Events.Inform)
+      type: "'container'"
+      components:
+        - type: "'parameter'"
+        - chart: "'online'"
+          type: "'overview-dot'"
+        - type: "'summon-button'"
+          parameters:
+            # Virtual Parameters
+            - VirtualParameters.getponmode
+            - VirtualParameters.IPTR069
+            # Device Information
+            - DeviceID.SerialNumber
+            - DeviceID.ProductClass
+            - DeviceID.Manufacturer
+            - InternetGatewayDevice.DeviceInfo.HardwareVersion
+            - InternetGatewayDevice.DeviceInfo.SoftwareVersion
+            # Network Configuration
+            - InternetGatewayDevice.LANDevice.1.Hosts.Host
+            - InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.IPRouters
+            - InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MinAddress
+            - InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MaxAddress
+            # WiFi Configuration
+            - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID
+            - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase
+            - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.TotalAssociations
+
+    # Device Identity Information
+    - label: "'Device Uptime'"
+      parameter: VirtualParameters.getdeviceuptime
+    - label: "'Serial Number'"
+      parameter: DeviceID.SerialNumber
+    - label: "'Device Type'"
+      parameter: DeviceID.ProductClass
+    - label: "'Manufacturer'"
+      parameter: DeviceID.Manufacturer
+    - label: "'OUI'"
+      parameter: DeviceID.OUI
+    - label: "'Hardware Version'"
+      parameter: InternetGatewayDevice.DeviceInfo.HardwareVersion
+    - label: "'Software Version'"
+      parameter: InternetGatewayDevice.DeviceInfo.SoftwareVersion
+
+    # Network Interface Information
+    - label: "'MAC Address'"
+      parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.MACAddress
+    - label: "'Link Type'"
+      parameter: VirtualParameters.getponmode
+    - label: "'Rx Power'"
+      parameter: VirtualParameters.RXPower
+
+    # LAN Configuration
+    - label: "'IP Router'"
+      parameter: InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.IPRouters
+    - label: "'DHCP Start Address'"
+      parameter: InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MinAddress
+    - label: "'DHCP End Address'"
+      parameter: InternetGatewayDevice.LANDevice.1.LANHostConfigManagement.MaxAddress
+
+    # WAN Connection Information (Clickable Links)
+    - label: "'PPPoE IP Address'"
+      parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ExternalIPAddress
+      type: "'container'"
+      components:
+        - type: "'parameter'"
+      element:
+        tag: "'a'"
+        attributes:
+          href: '"http://"||ENCODEURICOMPONENT(InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.ExternalIPAddress)'
+          target: "'_blank'"
+
+    - label: "'TR069 IP Address'"
+      parameter: VirtualParameters.IPTR069
+      type: "'container'"
+      components:
+        - type: "'parameter'"
+      element:
+        tag: "'a'"
+        attributes:
+          href: '"http://"||ENCODEURICOMPONENT(VirtualParameters.IPTR069)'
+          target: "'_blank'"
+
+    # PPPoE Credentials
+    - label: "'PPPoE Username'"
+      parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username
+    - label: "'PPPoE Password'"
+      parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Password
+
+    # WiFi Information
+    - label: "'WiFi SSID'"
+      parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID
+    - label: "'WiFi Password'"
+      parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase
+    - label: "'Active WiFi Devices'"
+      parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.TotalAssociations
+
+    # PON Mode
+    - label: "'PON Access Type'"
+      parameter: InternetGatewayDevice.WANDevice.1.WANCommonInterfaceConfig.WANAccessType
+
+# =============================================================================
+# DEVICE TAGS & EXTERNAL RESOURCES
+# =============================================================================
+- type: "'tags'"
+
+- href: '"https://pastebin.com/raw/VK2pc5jq"'
+  innerHTML: "'WAN PARAMETER REFERENCE'"
+  target: "'_blank'"
+  type: "'a'"
+
+# =============================================================================
+# MANUFACTURER-SPECIFIC CONFIGURATIONS
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# ECOMTECH TECHNOLOGIES DEVICES
+# -----------------------------------------------------------------------------
+- filter: DeviceID.Manufacturer = "EcomTech Technologies Co., Ltd"
+  type: "'container'"
+  components:
+    # WAN PPP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_HW_SERVICELIST
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'VLAN ID'"
+          parameter: X_HW_VLAN
+        - label: "'NAT Enabled'"
+          parameter: NATEnabled
+        # LAN Port Bindings
+        - label: "'LAN Port 1'"
+          parameter: X_HW_LANBIND.Lan1Enable
+        - label: "'LAN Port 2'"
+          parameter: X_HW_LANBIND.Lan2Enable
+        - label: "'LAN Port 3'"
+          parameter: X_HW_LANBIND.Lan3Enable
+        - label: "'LAN Port 4'"
+          parameter: X_HW_LANBIND.Lan4Enable
+        # SSID Bindings
+        - label: "'SSID 1 Binding'"
+          parameter: X_HW_LANBIND.SSID1Enable
+        - label: "'SSID 2 Binding'"
+          parameter: X_HW_LANBIND.SSID2Enable
+        - label: "'SSID 3 Binding'"
+          parameter: X_HW_LANBIND.SSID3Enable
+        - label: "'SSID 4 Binding'"
+          parameter: X_HW_LANBIND.SSID4Enable
+
+    # WAN IP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'IP Mode'"
+          parameter: AddressingType
+        - label: "'Service List'"
+          parameter: X_HW_SERVICELIST
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'VLAN ID'"
+          parameter: X_HW_VLAN
+        - label: "'NAT Enabled'"
+          parameter: NATEnabled
+        # LAN Port Bindings
+        - label: "'LAN Port 1'"
+          parameter: X_HW_LANBIND.Lan1Enable
+        - label: "'LAN Port 2'"
+          parameter: X_HW_LANBIND.Lan2Enable
+        - label: "'LAN Port 3'"
+          parameter: X_HW_LANBIND.Lan3Enable
+        - label: "'LAN Port 4'"
+          parameter: X_HW_LANBIND.Lan4Enable
+        # SSID Bindings
+        - label: "'SSID 1 Binding'"
+          parameter: X_HW_LANBIND.SSID1Enable
+        - label: "'SSID 2 Binding'"
+          parameter: X_HW_LANBIND.SSID2Enable
+        - label: "'SSID 3 Binding'"
+          parameter: X_HW_LANBIND.SSID3Enable
+        - label: "'SSID 4 Binding'"
+          parameter: X_HW_LANBIND.SSID4Enable
+
+    # WLAN Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WLAN Configuration'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration
+
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'SSID Name'"
+          parameter: SSID
+        - label: "'WiFi Password'"
+          parameter: PreSharedKey.1.KeyPassphrase
+        - label: "'Status'"
+          parameter: Enable
+
+# -----------------------------------------------------------------------------
+# D-LINK DEVICES
+# -----------------------------------------------------------------------------
+- filter: DeviceID.Manufacturer = "D-LINK"
+  type: "'container'"
+  components:
+    # WAN PPP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_COM_SERVICELIST
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'VLAN ID'"
+          parameter: VLANID
+        - label: "'LAN Interface Binding'"
+          parameter: X_FH_LanInterface
+
+    # WAN IP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_COM_SERVICELIST
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'VLAN ID'"
+          parameter: VLANID
+        - label: "'LAN Interface Binding'"
+          parameter: X_FH_LanInterface
+
+    # WLAN Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WLAN Configuration'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration
+
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'SSID Name'"
+          parameter: SSID
+        - label: "'WiFi Password'"
+          parameter: PreSharedKey.1.KeyPassphrase
+        - label: "'Status'"
+          parameter: Enable
+
+# -----------------------------------------------------------------------------
+# FIBERHOME DEVICES
+# -----------------------------------------------------------------------------
+- filter: DeviceID.Manufacturer = "FiberHome"
+  type: "'container'"
+  components:
+    # WAN PPP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_FH_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'VLAN ID'"
+          parameter: VLANID
+        - label: "'LAN Interface Binding'"
+          parameter: X_FH_LanInterface
+
+    # WAN IP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Enable'"
+          parameter: Enable
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_FH_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'VLAN ID'"
+          parameter: VLANID
+        - label: "'LAN Interface Binding'"
+          parameter: X_FH_LanInterface
+
+    # WLAN Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WLAN Configuration'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration
+
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'SSID Name'"
+          parameter: SSID
+        - label: "'WiFi Password'"
+          parameter: PreSharedKey.1.KeyPassphrase
+        - label: "'Security Mode'"
+          parameter: BasicAuthenticationMode
+        - label: "'Auth Mode'"
+          parameter: WPAAuthenticationMode
+        - label: "'Status'"
+          parameter: Enable
+
+# -----------------------------------------------------------------------------
+# HUAWEI DEVICES
+# -----------------------------------------------------------------------------
+- filter: DeviceID.Manufacturer = "Huawei Technologies Co., Ltd"
+  type: "'container'"
+  components:
+    # WAN PPP Connection 1
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection 1'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_HW_SERVICELIST
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'NAT Enabled'"
+          parameter: NATEnabled
+        - label: "'VLAN ID'"
+          parameter: X_HW_VLAN
+        # LAN Port Bindings
+        - label: "'LAN Port 1'"
+          parameter: X_HW_LANBIND.Lan1Enable
+        - label: "'LAN Port 2'"
+          parameter: X_HW_LANBIND.Lan2Enable
+        - label: "'LAN Port 3'"
+          parameter: X_HW_LANBIND.Lan3Enable
+        - label: "'LAN Port 4'"
+          parameter: X_HW_LANBIND.Lan4Enable
+        # SSID Bindings
+        - label: "'SSID 1 Binding'"
+          parameter: X_HW_LANBIND.SSID1Enable
+        - label: "'SSID 2 Binding'"
+          parameter: X_HW_LANBIND.SSID2Enable
+        - label: "'SSID 3 Binding'"
+          parameter: X_HW_LANBIND.SSID3Enable
+        - label: "'SSID 4 Binding'"
+          parameter: X_HW_LANBIND.SSID4Enable
+
+    # WAN IP Connection 1
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection 1'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_HW_SERVICELIST
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'NAT Enabled'"
+          parameter: NATEnabled
+        - label: "'VLAN ID'"
+          parameter: X_HW_VLAN
+        # LAN Port Bindings
+        - label: "'LAN Port 1'"
+          parameter: X_HW_LANBIND.Lan1Enable
+        - label: "'LAN Port 2'"
+          parameter: X_HW_LANBIND.Lan2Enable
+        - label: "'LAN Port 3'"
+          parameter: X_HW_LANBIND.Lan3Enable
+        - label: "'LAN Port 4'"
+          parameter: X_HW_LANBIND.Lan4Enable
+        # SSID Bindings
+        - label: "'SSID 1 Binding'"
+          parameter: X_HW_LANBIND.SSID1Enable
+        - label: "'SSID 2 Binding'"
+          parameter: X_HW_LANBIND.SSID2Enable
+        - label: "'SSID 3 Binding'"
+          parameter: X_HW_LANBIND.SSID3Enable
+        - label: "'SSID 4 Binding'"
+          parameter: X_HW_LANBIND.SSID4Enable
+
+    # WAN PPP Connection 2
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection 2'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_HW_SERVICELIST
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'NAT Enabled'"
+          parameter: NATEnabled
+        - label: "'VLAN ID'"
+          parameter: X_HW_VLAN
+        # LAN Port Bindings
+        - label: "'LAN Port 1'"
+          parameter: X_HW_LANBIND.Lan1Enable
+        - label: "'LAN Port 2'"
+          parameter: X_HW_LANBIND.Lan2Enable
+        - label: "'LAN Port 3'"
+          parameter: X_HW_LANBIND.Lan3Enable
+        - label: "'LAN Port 4'"
+          parameter: X_HW_LANBIND.Lan4Enable
+        # SSID Bindings
+        - label: "'SSID 1 Binding'"
+          parameter: X_HW_LANBIND.SSID1Enable
+        - label: "'SSID 2 Binding'"
+          parameter: X_HW_LANBIND.SSID2Enable
+        - label: "'SSID 3 Binding'"
+          parameter: X_HW_LANBIND.SSID3Enable
+        - label: "'SSID 4 Binding'"
+          parameter: X_HW_LANBIND.SSID4Enable
+
+    # WAN IP Connection 2
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection 2'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.2.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_HW_SERVICELIST
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'NAT Enabled'"
+          parameter: NATEnabled
+        - label: "'VLAN ID'"
+          parameter: X_HW_VLAN
+        # LAN Port Bindings
+        - label: "'LAN Port 1'"
+          parameter: X_HW_LANBIND.Lan1Enable
+        - label: "'LAN Port 2'"
+          parameter: X_HW_LANBIND.Lan2Enable
+        - label: "'LAN Port 3'"
+          parameter: X_HW_LANBIND.Lan3Enable
+        - label: "'LAN Port 4'"
+          parameter: X_HW_LANBIND.Lan4Enable
+        # SSID Bindings
+        - label: "'SSID 1 Binding'"
+          parameter: X_HW_LANBIND.SSID1Enable
+        - label: "'SSID 2 Binding'"
+          parameter: X_HW_LANBIND.SSID2Enable
+        - label: "'SSID 3 Binding'"
+          parameter: X_HW_LANBIND.SSID3Enable
+        - label: "'SSID 4 Binding'"
+          parameter: X_HW_LANBIND.SSID4Enable
+
+    # WLAN Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WLAN Configuration'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration
+
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'SSID Name'"
+          parameter: SSID
+        - label: "'Security Type'"
+          parameter: BeaconType
+        - label: "'WiFi Password'"
+          parameter: PreSharedKey.1.KeyPassphrase
+        - label: "'Status'"
+          parameter: Enable
+
+    # User Management
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'User Management'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.UserInterface.X_HW_WebUserInfo
+
+    - parameter: InternetGatewayDevice.UserInterface.X_HW_WebUserInfo
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Username'"
+          parameter: UserName
+        - label: "'Password'"
+          parameter: Password
+        - label: "'Status'"
+          parameter: Enable
+
+# =============================================================================
+# ZTE DEVICE CONFIGURATIONS (Multiple Models)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# ZTE F660 DEVICES
+# -----------------------------------------------------------------------------
+- filter: DeviceID.Manufacturer = "ZTE" AND DeviceID.ProductClass = "F660"
+  type: "'container'"
+  components:
+    # WAN PPP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_ZTE-COM_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'VLAN ID'"
+          parameter: X_ZTE-COM_VLANID
+
+    # WAN IP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_ZTE-COM_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'VLAN ID'"
+          parameter: X_ZTE-COM_VLANID
+
+    # WLAN Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WLAN Configuration'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration
+
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'SSID Name'"
+          parameter: SSID
+        - label: "'WiFi Password'"
+          parameter: PreSharedKey.1.KeyPassphrase
+        - label: "'Status'"
+          parameter: Enable
+
+# -----------------------------------------------------------------------------
+# ZTE F609 DEVICES
+# -----------------------------------------------------------------------------
+- filter: DeviceID.Manufacturer = "ZTE" AND DeviceID.ProductClass = "F609"
+  type: "'container'"
+  components:
+    # WAN PPP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_ZTE-COM_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'VLAN ID'"
+          parameter: X_ZTE-COM_VLANID
+
+    # WAN IP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_ZTE-COM_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'VLAN ID'"
+          parameter: X_ZTE-COM_VLANID
+
+    # WLAN Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WLAN Configuration'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration
+
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'SSID Name'"
+          parameter: SSID
+        - label: "'WiFi Password'"
+          parameter: PreSharedKey.1.KeyPassphrase
+        - label: "'Status'"
+          parameter: Enable
+
+# -----------------------------------------------------------------------------
+# ZTE F670 DEVICES
+# -----------------------------------------------------------------------------
+- filter: DeviceID.Manufacturer = "ZTE" AND DeviceID.ProductClass = "F670"
+  type: "'container'"
+  components:
+    # WAN PPP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_ZTE-COM_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'VLAN ID'"
+          parameter: X_ZTE-COM_VLANID
+
+    # WAN IP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_ZTE-COM_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'VLAN ID'"
+          parameter: X_ZTE-COM_VLANID
+
+    # WLAN Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WLAN Configuration'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration
+
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'SSID Name'"
+          parameter: SSID
+        - label: "'WiFi Password'"
+          parameter: PreSharedKey.1.KeyPassphrase
+        - label: "'Status'"
+          parameter: Enable
+
+# -----------------------------------------------------------------------------
+# ZTE F670L DEVICES
+# -----------------------------------------------------------------------------
+- filter: DeviceID.Manufacturer = "ZTE" AND DeviceID.ProductClass = "F670L"
+  type: "'container'"
+  components:
+    # WAN PPP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - label: "'WAN PPP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANPPPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_ZTE-COM_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Username'"
+          parameter: Username
+        - label: "'Password'"
+          parameter: Password
+        - label: "'VLAN ID'"
+          parameter: X_ZTE-COM_VLANID
+
+    # WAN IP Connection Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WAN IP Connection'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.WANDevice.*.WANConnectionDevice.*.WANIPConnection
+
+    - parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'Status'"
+          parameter: Enable
+        - label: "'WAN Type'"
+          parameter: AddressingType
+        - label: "'Connection Name'"
+          parameter: Name
+        - label: "'Connection Mode'"
+          parameter: ConnectionType
+        - label: "'Service List'"
+          parameter: X_ZTE-COM_ServiceList
+        - label: "'External IP'"
+          parameter: ExternalIPAddress
+        - label: "'Gateway'"
+          parameter: DefaultGateway
+        - label: "'DNS Servers'"
+          parameter: DNSServers
+        - label: "'NAT Enabled'"
+          parameter: NATEnabled
+        - label: "'VLAN ID'"
+          parameter: X_ZTE-COM_VLANID
+
+    # WLAN Configuration
+    - type: "'parameter-list'"
+      parameters:
+        - element: "'span.inform'"
+          label: "'WLAN Configuration'"
+          type: "'container'"
+          components:
+            - type: "'summon-button'"
+              parameters:
+                - InternetGatewayDevice.LANDevice.*.WLANConfiguration
+
+    - parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration
+      type: "'parameter-table'"
+      childParameters:
+        - label: "'SSID Name'"
+          parameter: SSID
+        - label: "'WiFi Password'"
+          parameter: PreSharedKey.1.KeyPassphrase
+        - label: "'Status'"
+          parameter: Enable
+
+# =============================================================================
+# COMMON SECTIONS FOR ALL DEVICES
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# LAN HOST INFORMATION
+# -----------------------------------------------------------------------------
+- type: "'parameter-list'"
+  parameters:
+    - element: "'span.inform'"
+      label: "'LAN Connected Devices'"
+      type: "'container'"
+      components:
+        - type: "'summon-button'"
+          parameters:
+            - InternetGatewayDevice.LANDevice.*.Hosts.Host
+
+- parameter: InternetGatewayDevice.LANDevice.1.Hosts.Host
+  type: "'parameter-table'"
+  childParameters:
+    - label: "'Host Name'"
+      parameter: HostName
+    - label: "'IP Address'"
+      parameter: IPAddress
+    - label: "'MAC Address'"
+      parameter: MACAddress
+    - label: "'Interface Type'"
+      parameter: InterfaceType
+
+# -----------------------------------------------------------------------------
+# DEVICE FAULTS & DIAGNOSTICS
+# -----------------------------------------------------------------------------
+- element: "'div'"
+  type: "'container'"
+  components:
+    - element: "'h3'"
+      type: "'container'"
+      components:
+        - "'Device Faults'"
+    - type: "'device-faults'"
+
+# -----------------------------------------------------------------------------
+# ALL PARAMETERS VIEW
+# -----------------------------------------------------------------------------
+- element: "'div.container-full-width'"
+  type: "'container'"
+  components:
+    - element: "'h3'"
+      type: "'container'"
+      components:
+        - "'All Device Parameters'"
+    - type: "'all-parameters'"
+
+# -----------------------------------------------------------------------------
+# DEVICE ACTIONS
+# -----------------------------------------------------------------------------
+- type: "'device-actions'"

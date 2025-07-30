@@ -1,0 +1,47 @@
+# GenieACS Index Page Configuration
+# Simplified Device Overview - Essential Information Only
+
+- type: "'tags'"
+
+# Summon only required virtual parameters
+- type: "'summon-button'"
+  parameters:
+    - VirtualParameters.getdeviceuptime
+    - VirtualParameters.getponmode
+    - VirtualParameters.RXPower
+    - InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username
+    - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID
+    - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase
+    - InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.TotalAssociations
+    - DeviceID.ProductClass
+    - DeviceID.SerialNumber
+
+# Essential Device Information
+- label: "'Device Type'"
+  parameter: DeviceID.ProductClass
+  
+- label: "'Serial Number'"
+  parameter: DeviceID.SerialNumber
+
+- label: "'PPPoE Username'"
+  parameter: InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1.Username
+  writable: false
+
+- label: "'Uptime'"
+  parameter: VirtualParameters.getdeviceuptime
+
+- label: "'PON Mode'"
+  parameter: VirtualParameters.getponmode
+  
+- label: "'RX Power'"
+  parameter: VirtualParameters.RXPower
+
+- label: "'WiFi SSID'"
+  parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.SSID
+
+- label: "'WiFi Password'"
+  parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.KeyPassphrase
+  writable: false
+
+- label: "'Active WiFi Clients'"
+  parameter: InternetGatewayDevice.LANDevice.1.WLANConfiguration.1.TotalAssociations

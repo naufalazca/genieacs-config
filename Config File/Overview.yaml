@@ -1,0 +1,7 @@
+network_overview:
+  label: "'Network Overview'"
+  charts:
+    - "'device_status'"
+    - "'PON'"
+    - "'PON_Power'"
+    - "'device_manufacturer'"

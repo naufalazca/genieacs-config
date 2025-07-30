@@ -1,0 +1,76 @@
+PON:
+  label: "'Connection Type'"
+  slices:
+    1_GPON:
+      color: "'#00C851'"
+      filter: VirtualParameters.getponmode = "GPON" OR VirtualParameters.getponmode = "X_CU_GPON"
+      label: "'GPON'"
+    2_EPON:
+      color: "'#FFB300'"
+      filter: VirtualParameters.getponmode = "EPON" OR VirtualParameters.getponmode = "X_CU_EPON"
+      label: "'EPON'"
+    3_ETHER:
+      color: "'#2196F3'"
+      filter: VirtualParameters.getponmode = "Ethernet" OR VirtualParameters.getponmode = ""
+      label: "'Ethernet/Converter'"
+PON_Power:
+  label: "'Signal Quality'"
+  slices:
+    1_Excellent:
+      color: "'#00C851'"
+      filter: VirtualParameters.RXPower <= "-21"
+      label: "'Excellent'"
+    2_Good:
+      color: "'#FFB300'"
+      filter: VirtualParameters.RXPower > "-21" AND VirtualParameters.RXPower < "-27.99"
+      label: "'Good'"
+    3_Poor:
+      color: "'#FF4444'"
+      filter: VirtualParameters.RXPower >= "-28" AND VirtualParameters.RXPower <> "N/A"
+      label: "'Poor'"
+device_status:
+  label: "'Device Status'"
+  slices:
+    1_online:
+      color: "'#00C851'"
+      filter: Events.Inform > NOW() - 5 * 60 * 1000
+      label: "'Online'"
+    2_offline:
+      color: "'#FF4444'"
+      filter: Events.Inform > (NOW() - 5 * 60 * 1000) - (24 * 60 * 60 * 1000) AND Events.Inform < (NOW() - 5 * 60 * 1000)
+      label: "'Offline'"
+    3_lost:
+      color: "'#9E9E9E'"
+      filter: Events.Inform < (NOW() - 5 * 60 * 1000) - (24 * 60 * 60 * 1000)
+      label: "'Lost Connection'"
+device_manufacturer:
+  label: "'Device Manufacturer'"
+  slices:
+    1_Huawei:
+      color: "'#E91E63'"
+      filter: DeviceID.Manufacturer = "Huawei Technologies Co., Ltd"
+      label: "'Huawei'"
+    2_Fiberhome:
+      color: "'#4CAF50'"
+      filter: DeviceID.Manufacturer = "FiberHome"
+      label: "'FiberHome'"
+    3_EcomTech:
+      color: "'#9C27B0'"
+      filter: DeviceID.Manufacturer = "EcomTech Technologies Co., Ltd"
+      label: "'EcomTech'"
+    4_TOTOLINK:
+      color: "'#FF5722'"
+      filter: DeviceID.Manufacturer = "ZIONCOM"
+      label: "'TOTOLINK'"
+    5_ZTE:
+      color: "'#FFC107'"
+      filter: DeviceID.Manufacturer = "ZTE"
+      label: "'ZTE'"
+    6_MikroTik:
+      color: "'#607D8B'"
+      filter: DeviceID.Manufacturer = "MikroTik"
+      label: "'MikroTik'"
+    7_Others:
+      color: "'#795548'"
+      filter: DeviceID.Manufacturer <> "MikroTik" AND DeviceID.Manufacturer <> "ZTE" AND DeviceID.Manufacturer <> "ZIONCOM" AND DeviceID.Manufacturer <> "EcomTech Technologies Co., Ltd" AND DeviceID.Manufacturer <> "FiberHome" AND DeviceID.Manufacturer <> "Huawei Technologies Co., Ltd"
+      label: "'Others'"
