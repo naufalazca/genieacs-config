@@ -1,84 +1,55 @@
-// Parameter pengukuran PON RX pada perangkat berbeda
+// Safe RX Power measurement with device capability detection
+let result = "N/A";
 
-let m = "N/A";
-let db = "";
-let zte = declare("InternetGatewayDevice.WANDevice.*.X_ZTE-COM_WANPONInterfaceConfig.RXPower", {value: Date.now()});
-let huawei = declare("InternetGatewayDevice.WANDevice.*.X_GponInterafceConfig.RXPower", {value: Date.now()});
-let fiberhome = declare("InternetGatewayDevice.WANDevice.*.X_FH_GponInterfaceConfig.RXPower", {value: Date.now()});
-let ztecmcc = declare("InternetGatewayDevice.WANDevice.*.X_CMCC_EponInterfaceConfig.RXPower" , {value: Date.now()});
-let ztecmcg = declare("InternetGatewayDevice.WANDevice.*.X_CMCC_GponInterfaceConfig.RXPower" , {value: Date.now()});
-let gm220s = declare("InternetGatewayDevice.WANDevice.*.X_CT-COM_EponInterfaceConfig.RXPower" , {value: Date.now()});
-let f477v2 = declare("InternetGatewayDevice.WANDevice.*.X_CU_WANEPONInterfaceConfig.OpticalTransceiver.RXPower"	, {value: Date.now()});
+// First check if device has WAN capabilities
+let hasWAN = declare("InternetGatewayDevice.WANDevice", {value: 1});
 
-if (zte.size) {
-   let zteval = zte.value[0]
-   if (zteval < 0) {
-      m = zteval;
-      
+if (hasWAN.size === 0) {
+    // Device doesn't have WAN capabilities (like F650 bridge)
+    result = "N/A - Bridge Device";
+    log("Device has no WAN capabilities, RX Power not applicable");
+} else {
+    // Try different vendor-specific PON interface paths
+    let ponPaths = [
+        {path: "InternetGatewayDevice.WANDevice.*.X_ZTE-COM_WANPONInterfaceConfig.RXPower", vendor: "ZTE"},
+        {path: "InternetGatewayDevice.WANDevice.*.X_GponInterafceConfig.RXPower", vendor: "Huawei"},
+        {path: "InternetGatewayDevice.WANDevice.*.X_FH_GponInterfaceConfig.RXPower", vendor: "FiberHome"},
+        {path: "InternetGatewayDevice.WANDevice.*.X_CMCC_EponInterfaceConfig.RXPower", vendor: "ZTE_CMCC_EPON"},
+        {path: "InternetGatewayDevice.WANDevice.*.X_CMCC_GponInterfaceConfig.RXPower", vendor: "ZTE_CMCC_GPON"},
+        {path: "InternetGatewayDevice.WANDevice.*.X_CT-COM_EponInterfaceConfig.RXPower", vendor: "GM220S"},
+        {path: "InternetGatewayDevice.WANDevice.*.X_CU_WANEPONInterfaceConfig.OpticalTransceiver.RXPower", vendor: "F477V2"}
+    ];
+    
+    let found = false;
+    
+    for (let ponConfig of ponPaths) {
+        let rxPower = declare(ponConfig.path, {value: 1});
+        
+        if (rxPower.size > 0 && rxPower.value[0] !== undefined) {
+            let powerValue = rxPower.value[0];
+            
+            if (powerValue < 0) {
+                // Already in dBm format
+                result = powerValue + " dBm";
+            } else if (powerValue > 0) {
+                // Convert from linear to dBm (vendor-specific calculation)
+                let dBm = 30 + (Math.log10((powerValue * (Math.pow(10,-7))))*10);
+                result = dBm.toFixed(2) + " dBm";
+            } else {
+                result = "0 dBm";
+            }
+            
+            log("Found RX Power from " + ponConfig.vendor + ": " + result);
+            found = true;
+            break;
+        }
     }
-    else if (zteval > 0) {
-      db = 30 + (Math.log10((zteval * (Math.pow(10,-7))))*10);
-	  m = Math.ceil(db * 100) / 100;
-    }
-}
-else if (ztecmcc.size) {
-   let zteval = ztecmcc.value[0]
-   if (zteval < 0) {
-      m = zteval;
-      
-    }
-    else if (zteval > 0) {
-      db = 30 + (Math.log10((zteval * (Math.pow(10,-7))))*10);
-	  m = Math.ceil(db * 100) / 100;
-    }
-}
-else if (ztecmcg.size) {
-   let zteval = ztecmcg.value[0]
-   if (zteval < 0) {
-      m = zteval;
-      
-    }
-    else if (zteval > 0) {
-      db = 30 + (Math.log10((zteval * (Math.pow(10,-7))))*10);
-	  m = Math.ceil(db * 100) / 100;
-    }
-}
-else if (gm220s.size) {
-   let zteval = gm220s.value[0]
-   if (zteval < 0) {
-      m = zteval;
-      
-    }
-    else if (zteval > 0) {
-      db = 30 + (Math.log10((zteval * (Math.pow(10,-7))))*10);
-	  m = Math.ceil(db * 100) / 100;
-    }
-}
-else if (f477v2.size) {
-   let zteval = f477v2.value[0]
-   if (zteval < 0) {
-      m = zteval;
-      
-    }
-    else if (zteval > 0) {
-      db = 30 + (Math.log10((zteval * (Math.pow(10,-7))))*10);
-	  m = Math.ceil(db * 100) / 100;
+    
+    if (!found) {
+        result = "N/A - No PON Interface";
+        log("No PON interface found on this device");
     }
 }
-else if (huawei.size) {
-  for (let p of huawei) {
-    if (p.value[0]) {
-      m = p.value[0];
-      break;
-    }
-  }
-}
-else if (fiberhome.size) {
-  for (let p of fiberhome) {
-    if (p.value[0]) {
-      m = p.value[0];
-      break;
-    }
-  }
-}
-return {writable: false, value: [m, "xsd:string"]};
+
+log("Final RX Power result: " + result);
+return {writable: true, value: [result, "xsd:string"]};
