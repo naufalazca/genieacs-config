@@ -3,31 +3,35 @@ PON:
   slices:
     1_GPON:
       color: "'#00C851'"
-      filter: VirtualParameters.getponmode = "GPON" OR VirtualParameters.getponmode = "X_CU_GPON"
+      filter: VirtualParameters.getponmode = "GPON" OR VirtualParameters.getponmode =
+        "X_CU_GPON"
       label: "'GPON'"
     2_EPON:
       color: "'#FFB300'"
-      filter: VirtualParameters.getponmode = "EPON" OR VirtualParameters.getponmode = "X_CU_EPON"
+      filter: VirtualParameters.getponmode = "EPON" OR VirtualParameters.getponmode =
+        "X_CU_EPON"
       label: "'EPON'"
     3_ETHER:
       color: "'#2196F3'"
-      filter: VirtualParameters.getponmode = "Ethernet" OR VirtualParameters.getponmode = ""
+      filter: VirtualParameters.getponmode = "Ethernet" OR
+        VirtualParameters.getponmode = ""
       label: "'Ethernet/Converter'"
 PON_Power:
   label: "'Signal Quality'"
   slices:
     1_Excellent:
       color: "'#00C851'"
-      filter: VirtualParameters.RXPower <= "-21"
-      label: "'Excellent'"
+      filter: VirtualParameters.RXPower <= "-15"
+      label: "'Terlalu Bagus'"
     2_Good:
       color: "'#FFB300'"
-      filter: VirtualParameters.RXPower > "-21" AND VirtualParameters.RXPower < "-27.99"
-      label: "'Good'"
+      filter: VirtualParameters.RXPower > "-15" AND VirtualParameters.RXPower <
+        "-25.99"
+      label: "'Bagus'"
     3_Poor:
       color: "'#FF4444'"
-      filter: VirtualParameters.RXPower >= "-28" AND VirtualParameters.RXPower <> "N/A"
-      label: "'Poor'"
+      filter: VirtualParameters.RXPower >= "-26" AND VirtualParameters.RXPower <> "N/A"
+      label: "'Jelek'"
 device_status:
   label: "'Device Status'"
   slices:
@@ -37,7 +41,8 @@ device_status:
       label: "'Online'"
     2_offline:
       color: "'#FF4444'"
-      filter: Events.Inform > (NOW() - 5 * 60 * 1000) - (24 * 60 * 60 * 1000) AND Events.Inform < (NOW() - 5 * 60 * 1000)
+      filter: Events.Inform > (NOW() - 5 * 60 * 1000) - (24 * 60 * 60 * 1000) AND
+        Events.Inform < (NOW() - 5 * 60 * 1000)
       label: "'Offline'"
     3_lost:
       color: "'#9E9E9E'"
@@ -72,5 +77,8 @@ device_manufacturer:
       label: "'MikroTik'"
     7_Others:
       color: "'#795548'"
-      filter: DeviceID.Manufacturer <> "MikroTik" AND DeviceID.Manufacturer <> "ZTE" AND DeviceID.Manufacturer <> "ZIONCOM" AND DeviceID.Manufacturer <> "EcomTech Technologies Co., Ltd" AND DeviceID.Manufacturer <> "FiberHome" AND DeviceID.Manufacturer <> "Huawei Technologies Co., Ltd"
+      filter: DeviceID.Manufacturer <> "MikroTik" AND DeviceID.Manufacturer <> "ZTE"
+        AND DeviceID.Manufacturer <> "ZIONCOM" AND DeviceID.Manufacturer <>
+        "EcomTech Technologies Co., Ltd" AND DeviceID.Manufacturer <>
+        "FiberHome" AND DeviceID.Manufacturer <> "Huawei Technologies Co., Ltd"
       label: "'Others'"

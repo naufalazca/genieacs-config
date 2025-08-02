@@ -30,13 +30,13 @@ if (hasWAN.size === 0) {
             
             if (powerValue < 0) {
                 // Already in dBm format
-                result = powerValue + " dBm";
+                result = powerValue.toString();
             } else if (powerValue > 0) {
                 // Convert from linear to dBm (vendor-specific calculation)
                 let dBm = 30 + (Math.log10((powerValue * (Math.pow(10,-7))))*10);
-                result = dBm.toFixed(2) + " dBm";
+                result = dBm.toFixed(2);
             } else {
-                result = "0 dBm";
+                result = "0";
             }
             
             log("Found RX Power from " + ponConfig.vendor + ": " + result);
