@@ -1,11 +1,9 @@
 //URL ACS
 const url = "http://10.240.0.6:7547";
 
-// Device ID sebagai username
-const username = declare("DeviceID.ID", {value: 1}).value[0]
-
-// Password will be fixed for a given device because Math.random() is seeded with device ID by default.
-const password = Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER).toString(36);
+// Static credentials untuk management yang konsisten
+const username = "genieacs_admin";
+const password = "GenieACS@2024!Secure";
 
 //Interval inform
 const informInterval = 100;
